@@ -1,7 +1,9 @@
 const Nightmare = require('nightmare');
 const nightmare = Nightmare({ show: true });
 const jquery = require('jquery');
+const fs = require('fs');
 
+let scrapeData;
 
 nightmare
 .goto('https://css-tricks.com/snippets/javascript/')
@@ -60,20 +62,14 @@ nightmare
     }, [])
 
     return snippets;
-    // setTimeout(results.push(titles), 100);
-    // setTimeout(results.push(dates),200);
-    // setTimeout(results.push(writers),300);
-    // setTimeout(results.push(categories),400);
-
-    
-    // let nameNodes = document.querySelectorAll('.snippet-title');
-    // let list = [].slice.call(nameNodes);
-    return list.map(function(node) {
-      return node.innerText
-    })
   })
   .end()
-  .then((result) => console.log(result))
+  // .then((result) => console.log(result))
+  .then((anchors) => {
+    fs.writeFileSync('testPutput.json', JSON.stringify(anchors));
+    console.log('Done: ', anchors)
+  })
   .catch(error => {
-    console.error('Search failed: error')
+    console.error(`Search failed: ${error}`)
   });
+

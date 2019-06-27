@@ -1,0 +1,2 @@
+import scrapeData from './pagescraper';
+
