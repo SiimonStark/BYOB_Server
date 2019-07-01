@@ -15,8 +15,34 @@ exports.seed = function(knex) {
   })
     .then(function () {
       // Inserts seed entries
-      return knex('authors').insert([
-        
-      ]);
-    });
+      return knex('authors').insert(authorData);
+    })
+    .then(function() {
+      return knex('topics').insert(topicData);
+    })
+    .then(function() {
+      let snippetsPromise = [];
+      snippetData.forEach((article) => {
+        let author = article.author.last_name;
+        let topic = article.topic;
+
+        snippetsPromise.push(createSnippet(knex, article, author, topic));
+      })
+    })
 };
+
+const createSnippet = (knex, article, author, topic) => {
+  return knex('authors').where('last_name', author).first()
+  .then((authorRecord) => {
+    return knex('topics').where('category', topic).first()
+    .then((topicRecord) => {
+      return knex('snippets').insert({
+        title: article.title,
+        link: article.link,
+        date: article.updated,
+        topic_id: topicRecord.id,
+        author_id: authorRecord.id
+      });
+    });
+  });
+}
